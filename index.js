@@ -6,6 +6,8 @@ const app = express()
 const PORT = 5000
 const { ApolloServer } = require("apollo-server-express")
 const { resolvers, typeDefs } = require("./schema")
+require("dotenv").config()
+const db = require("./db")()
 
 app.get("/", (req, res) => {
   return res.send("Home Page")
