@@ -4,26 +4,36 @@ const express = require("express")
 const res = require("express/lib/response")
 const app = express()
 const PORT = 5000
-const { ApolloServer } = require("apollo-server-express")
+const {
+  ApolloServer,
+  ValidationError,
+  ForbiddenError,
+} = require("apollo-server-express")
 const { resolvers, typeDefs } = require("./schema")
-require("dotenv").config()
 const db = require("./db")()
+const error_responses = require("./error_response")
 
 app.get("/", (req, res) => {
-  return res.send("Home Page")
+  return res.send("Home page")
 })
 
 const startApolloServer = async () => {
-  const server = new ApolloServer({ typeDefs, resolvers })
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    formatError: (err) => error_responses(err),
+  })
   await server.start()
 
   server.applyMiddleware({ app, path: "/graphql" })
+
   console.log(
-    `APOLLO SERVER IS RUNNING AT http://localhost:${5000}${server.graphqlPath}`
+    `apollo server is running at http://localhost:${PORT}${server.graphqlPath}`
   )
 }
+
 startApolloServer()
 
 app.listen(PORT, () => {
-  console.log(`SERVER IS RUNNING AT http://localhost:${5000}`)
+  console.log(`server is running at http://localhost:${PORT}`)
 })
