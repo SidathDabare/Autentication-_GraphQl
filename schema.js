@@ -20,6 +20,7 @@ const typeDefs = gql`
 
   type Query {
     hello: String
+    me: User
   }
 
   type Mutation {
@@ -31,6 +32,9 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     hello: () => "hello world",
+    me: (parent, args, context, info) => {
+      return context.auth_user
+    },
   },
   Mutation: {
     signup: async (parent, args, context, info) => {
@@ -60,7 +64,7 @@ const resolvers = {
       }
       const token = jwt.sign(
         { data: { userId: user._id, email } },
-        "my super secret",
+        process.env.JWT_SECRET,
         { expiresIn: "1h" }
       )
       return {
